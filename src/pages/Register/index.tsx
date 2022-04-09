@@ -21,32 +21,44 @@ import { AuthApi } from "../../services/Auth";
 
 interface State {
   mail: string;
+  name: string;
   password: string;
+  confirmPassword: string;
   showPassword: boolean;
+  showConfirmPassword: boolean;
 }
 
 interface Error {
   mail: string;
+  name: string;
   password: string;
+  confirmPassword: string;
 }
 
 export default function Home() {
   const [values, setValues] = React.useState<State>({
     mail: "",
     password: "",
+    name: "",
+    confirmPassword: "",
     showPassword: false,
+    showConfirmPassword: false,
   });
   const [errors, setError] = React.useState<Error>({
     mail: "",
+    name: "",
     password: "",
+    confirmPassword: "",
   });
 
   const authApi = React.useMemo(() => new AuthApi(), []);
 
-  const handleClickShowPassword = () => {
+  const handleClickShowPassword = (
+    key: "showPassword" | "showConfirmPassword"
+  ) => {
     setValues({
       ...values,
-      showPassword: !values.showPassword,
+      [key]: !values[key],
     });
   };
 
@@ -74,16 +86,25 @@ export default function Home() {
       );
   };
 
-  const submit = async () => {
+  const hasEmptyData = (data: State) => {
     const empty = {
       mail: !values.mail.length,
+      name: !values.name.length,
       password: !values.password.length,
+      confirmPassword: !values.confirmPassword.length,
     };
-    if (empty.mail || empty.password) {
+
+    return Object.values(empty).some((item) => item === true);
+  };
+
+  const submit = async () => {
+    if (hasEmptyData(values)) {
       const errorMessage = "Campo obrigatório";
       setError({
         mail: !values.mail.length ? errorMessage : "",
         password: !values.password.length ? errorMessage : "",
+        name: !values.name.length ? errorMessage : "",
+        confirmPassword: !values.confirmPassword.length ? errorMessage : "",
       });
       return;
     }
@@ -91,15 +112,20 @@ export default function Home() {
       handleChangeError("mail", "Email inválido");
       return;
     }
-
-    try {
-      await authApi.signIn({
-        email: values.mail,
-        password: values.password,
-      });
-    } catch (e) {
-      console.log(e);
+    if (values.password !== values.confirmPassword) {
+      handleChangeError("confirmPassword", "As senhas devem ser iguais");
+      return;
     }
+
+    // try {
+    //   const test = await authApi.signIn({
+    //     email: values.mail,
+    //     password: values.password,
+    //   });
+    //   console.log("test", test);
+    // } catch (e) {
+    //   console.log(e);
+    // }
   };
 
   return (
@@ -121,7 +147,7 @@ export default function Home() {
                   flexDirection="column"
                 >
                   <Typography variant="h3" component="h1" gutterBottom>
-                    Login
+                    Cadastro
                   </Typography>
                   <Box
                     display="flex"
@@ -136,6 +162,15 @@ export default function Home() {
                       onChange={handleChangeValue("mail")}
                       error={!!errors.mail.length}
                       helperText={errors.mail}
+                    />
+                    <TextField
+                      id="name-input"
+                      label="Nome"
+                      variant="standard"
+                      value={values.name}
+                      onChange={handleChangeValue("name")}
+                      error={!!errors.name.length}
+                      helperText={errors.name}
                     />
                     <Box mt={1}>
                       <FormControl variant="standard">
@@ -155,7 +190,9 @@ export default function Home() {
                             <InputAdornment position="end">
                               <IconButton
                                 aria-label="toggle password visibility"
-                                onClick={handleClickShowPassword}
+                                onClick={() =>
+                                  handleClickShowPassword("showPassword")
+                                }
                                 onMouseDown={handleMouseDownPassword}
                               >
                                 {values.showPassword ? (
@@ -174,9 +211,51 @@ export default function Home() {
                         )}
                       </FormControl>
                     </Box>
+
+                    <Box mt={1}>
+                      <FormControl variant="standard">
+                        <InputLabel
+                          htmlFor="password-label"
+                          error={!!errors.password.length}
+                        >
+                          Confirm Password
+                        </InputLabel>
+                        <Input
+                          id="password-input"
+                          type={
+                            values.showConfirmPassword ? "text" : "password"
+                          }
+                          value={values.confirmPassword}
+                          onChange={handleChangeValue("confirmPassword")}
+                          error={!!errors.confirmPassword.length}
+                          endAdornment={
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={() =>
+                                  handleClickShowPassword("showConfirmPassword")
+                                }
+                                onMouseDown={handleMouseDownPassword}
+                              >
+                                {values.showConfirmPassword ? (
+                                  <VisibilityOff />
+                                ) : (
+                                  <Visibility />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                        />
+                        {!!errors.confirmPassword && (
+                          <FormHelperText error={true}>
+                            {errors.confirmPassword}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Box>
                   </Box>
                   <Box
-                    mt={4}
+                    mt={3}
                     justifyContent="space-between"
                     display="flex"
                     width="100%"
