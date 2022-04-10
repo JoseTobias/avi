@@ -16,7 +16,8 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "../../components";
-
+import { useTheme } from "@mui/material/styles";
+import { useAlert } from "../../hooks/alert";
 import { AuthApi } from "../../services/Auth";
 
 interface State {
@@ -36,6 +37,8 @@ interface Error {
 }
 
 export default function Home() {
+  const theme = useTheme();
+  const { setFeedback } = useAlert();
   const [values, setValues] = React.useState<State>({
     mail: "",
     password: "",
@@ -117,15 +120,22 @@ export default function Home() {
       return;
     }
 
-    // try {
-    //   const test = await authApi.signIn({
-    //     email: values.mail,
-    //     password: values.password,
-    //   });
-    //   console.log("test", test);
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      await authApi.signOut({
+        email: values.mail,
+        password: values.password,
+        name: values.name,
+      });
+      setFeedback({
+        type: "success",
+        message: "Cadastro realizado com sucesso",
+      });
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: error,
+      });
+    }
   };
 
   return (
@@ -221,7 +231,7 @@ export default function Home() {
                           Confirm Password
                         </InputLabel>
                         <Input
-                          id="password-input"
+                          id="confirm-password-input"
                           type={
                             values.showConfirmPassword ? "text" : "password"
                           }

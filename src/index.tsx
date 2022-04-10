@@ -5,6 +5,7 @@ import Route from "./router";
 import theme from "./theme";
 import { createRoot } from "react-dom/client";
 import "./basedStyles.css";
+import { AlertProvider } from "./contexts";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -12,6 +13,8 @@ const root = createRoot(container);
 root.render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <Route />
+    <AlertProvider>
+      <Route />
+    </AlertProvider>
   </ThemeProvider>
 );
