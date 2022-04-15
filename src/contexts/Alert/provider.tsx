@@ -38,10 +38,10 @@ export const AlertProvider: FC<any> = ({ children }) => {
   }, []);
 
   const onClose = useCallback(() => {
-    setAlertData({
+    setAlertData(({ type }) => ({
       message: "",
-      type: "success",
-    });
+      type,
+    }));
   }, []);
 
   return (

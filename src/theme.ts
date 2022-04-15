@@ -12,6 +12,9 @@ const theme = createTheme({
     error: {
       main: red.A400,
     },
+    background: {
+      default: "#E3ECFE",
+    },
   },
   shape: { borderRadius: 8 },
 });

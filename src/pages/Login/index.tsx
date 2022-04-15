@@ -15,9 +15,13 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+
 import { LoadingButton } from "../../components";
 
-import { AuthApi } from "../../services/Auth";
+import { AuthService } from "../../services/Auth";
+import { useAlert } from "../../hooks/alert";
+import { useAuth } from "../../hooks/auth";
 
 interface State {
   mail: string;
@@ -31,9 +35,13 @@ interface Error {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
+  const { setFeedback } = useAlert();
+  const { signIn } = useAuth();
+
   const [values, setValues] = React.useState<State>({
-    mail: "",
-    password: "",
+    mail: "tobiassouza0@gmail.com",
+    password: "12345678",
     showPassword: false,
   });
   const [errors, setError] = React.useState<Error>({
@@ -41,7 +49,7 @@ export default function Home() {
     password: "",
   });
 
-  const authApi = React.useMemo(() => new AuthApi(), []);
+  const authService = React.useMemo(() => new AuthService(), []);
 
   const handleClickShowPassword = () => {
     setValues({
@@ -93,12 +101,16 @@ export default function Home() {
     }
 
     try {
-      await authApi.signIn({
+      await signIn({
         email: values.mail,
         password: values.password,
       });
-    } catch (e) {
-      console.log(e);
+      navigate("/");
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: error,
+      });
     }
   };
 

@@ -16,9 +16,9 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "../../components";
-import { useTheme } from "@mui/material/styles";
+// import { useTheme } from "@mui/material/styles";
 import { useAlert } from "../../hooks/alert";
-import { AuthApi } from "../../services/Auth";
+import { AuthService } from "../../services/Auth";
 
 interface State {
   mail: string;
@@ -37,7 +37,7 @@ interface Error {
 }
 
 export default function Home() {
-  const theme = useTheme();
+  // const theme = useTheme();
   const { setFeedback } = useAlert();
   const [values, setValues] = React.useState<State>({
     mail: "",
@@ -54,7 +54,7 @@ export default function Home() {
     confirmPassword: "",
   });
 
-  const authApi = React.useMemo(() => new AuthApi(), []);
+  const authService = React.useMemo(() => new AuthService(), []);
 
   const handleClickShowPassword = (
     key: "showPassword" | "showConfirmPassword"
@@ -121,7 +121,7 @@ export default function Home() {
     }
 
     try {
-      await authApi.signOut({
+      await authService.signUp({
         email: values.mail,
         password: values.password,
         name: values.name,

@@ -1,18 +1,26 @@
 import { BotApi } from "../../infra";
 import { IAuthProps, IRegisterProps, IAuthResponseError } from "./types";
 
-export class AuthApi {
-  async signIn(props: IAuthProps) {
-    const response = await BotApi.post("/login", props);
-
-    return response;
+export class AuthService {
+  async signIn(props: IAuthProps): Promise<void> {
+    const response = await BotApi.post("/login", props, {
+      withCredentials: true,
+    });
+    this.setToken(response.headers["x-authorization"]);
   }
 
   private setToken(token: string) {
-    BotApi.defaults.headers.common["Authorization"] = token;
+    BotApi.defaults.headers.common["x-authorization"] = token;
   }
 
-  async signOut(props: IRegisterProps): Promise<string> {
+  async usersMe() {
+    const response = await BotApi.get("/users/me");
+    console.log("usersMe", response);
+
+    return "response";
+  }
+
+  async signUp(props: IRegisterProps): Promise<string> {
     try {
       const response = await BotApi.post("/users", props);
       return "response";
