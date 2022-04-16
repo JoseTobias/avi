@@ -19,6 +19,12 @@ export interface IGetBotsResponseSuccess {
   teams: ITeam[];
 }
 
+export interface AddBotProps {
+  name: string;
+  nick: string;
+  description: string;
+}
+
 export interface ResponseError {
   errors: [
     {

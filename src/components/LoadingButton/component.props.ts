@@ -1,6 +1,5 @@
-export interface LoadingButtonProps {
-  children: string;
-  onClick?: () => void;
+import { ButtonProps } from "@mui/material";
+
+export interface LoadingButtonProps extends ButtonProps {
   loading?: boolean;
-  disabled?: boolean;
 }

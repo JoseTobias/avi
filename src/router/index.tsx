@@ -1,5 +1,6 @@
 import React from "react";
 
+import Config from "../pages/Config";
 import DashBoard from "../pages/DashBoard";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -15,6 +16,14 @@ const appRoutes: React.FC = () => {
           element={
             <RequireAuth>
               <DashBoard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/config/:nick"
+          element={
+            <RequireAuth>
+              <Config />
             </RequireAuth>
           }
         />

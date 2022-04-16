@@ -4,6 +4,7 @@ import {
   ITeam,
   IAuthResponseError,
   IBot,
+  AddBotProps,
 } from "./types";
 
 export class BotService {
@@ -16,6 +17,7 @@ export class BotService {
       throw new Error(error.response?.data.errors[0].message);
     }
   }
+
   async getBotsByNick(nick: string): Promise<ITeam[] | undefined> {
     try {
       const response = await BotApi.get<IBot[]>("/bots", {
@@ -28,6 +30,25 @@ export class BotService {
         teamGroupId: item.id,
         userId: item.id,
       }));
+
+      return team;
+    } catch (err) {
+      const error = err as IAuthResponseError;
+      throw new Error(error.response?.data.errors[0].message);
+    }
+  }
+
+  async addBot(props: AddBotProps): Promise<ITeam | undefined> {
+    try {
+      const response = await BotApi.post<IBot>("/bots", props);
+
+      const team = {
+        bot: response.data,
+        botId: response.data.id,
+        id: response.data.id,
+        teamGroupId: response.data.id,
+        userId: response.data.id,
+      };
 
       return team;
     } catch (err) {

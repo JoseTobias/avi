@@ -48,6 +48,7 @@ export default function Home() {
     mail: "",
     password: "",
   });
+  const [loading, setLoading] = React.useState(false);
 
   const authService = React.useMemo(() => new AuthService(), []);
 
@@ -83,6 +84,7 @@ export default function Home() {
   };
 
   const submit = async () => {
+    setLoading(true);
     const empty = {
       mail: !values.mail.length,
       password: !values.password.length,
@@ -111,6 +113,8 @@ export default function Home() {
         type: "error",
         message: error,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -211,7 +215,13 @@ export default function Home() {
                     </Link>
                   </Box>
                   <Box mt={2} width="100%">
-                    <LoadingButton loading={false} onClick={submit}>
+                    <LoadingButton
+                      loading={loading}
+                      onClick={submit}
+                      fullWidth
+                      variant="contained"
+                      size="large"
+                    >
                       Entrar
                     </LoadingButton>
                   </Box>

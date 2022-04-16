@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "../../components";
-// import { useTheme } from "@mui/material/styles";
 import { useAlert } from "../../hooks/alert";
 import { AuthService } from "../../services/Auth";
 
@@ -37,7 +36,6 @@ interface Error {
 }
 
 export default function Home() {
-  // const theme = useTheme();
   const { setFeedback } = useAlert();
   const [values, setValues] = React.useState<State>({
     mail: "",
@@ -53,6 +51,7 @@ export default function Home() {
     password: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = React.useState(false);
 
   const authService = React.useMemo(() => new AuthService(), []);
 
@@ -101,6 +100,7 @@ export default function Home() {
   };
 
   const submit = async () => {
+    setLoading(true);
     if (hasEmptyData(values)) {
       const errorMessage = "Campo obrigatório";
       setError({
@@ -135,6 +135,8 @@ export default function Home() {
         type: "error",
         message: error,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -288,7 +290,13 @@ export default function Home() {
                     </Link>
                   </Box>
                   <Box mt={2} width="100%">
-                    <LoadingButton loading={false} onClick={submit}>
+                    <LoadingButton
+                      loading={loading}
+                      onClick={submit}
+                      fullWidth
+                      variant="contained"
+                      size="large"
+                    >
                       Entrar
                     </LoadingButton>
                   </Box>

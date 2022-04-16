@@ -7,29 +7,36 @@ import { CardPaddingLess } from "./styles";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { ICardBotProps } from "./component.props";
 
-export function CardBot({ name, nick, description }: ICardBotProps) {
+export function CardBot({
+  name,
+  nick,
+  description,
+  onConfig,
+  onClick,
+}: ICardBotProps) {
   return (
-    <Box position="relative">
-      <Card>
-        <Box display="flex" justifyContent="flex-end" width="100%">
-          <IconButton sx={{ padding: 0, marginX: 1, marginTop: 1 }}>
-            <SettingsIcon fontSize="small" />
-          </IconButton>
-        </Box>
-        <CardPaddingLess>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {name}
-            </Typography>
-            <Typography gutterBottom variant="subtitle1" component="div">
-              {nick}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {description}
-            </Typography>
-          </CardContent>
-        </CardPaddingLess>
-      </Card>
-    </Box>
+    <Card sx={{ height: "100%" }}>
+      <Box display="flex" justifyContent="flex-end" width="100%">
+        <IconButton
+          sx={{ padding: 0, marginX: 1, marginTop: 1 }}
+          onClick={onConfig}
+        >
+          <SettingsIcon fontSize="small" />
+        </IconButton>
+      </Box>
+      <CardPaddingLess onClick={onClick}>
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            {name}
+          </Typography>
+          <Typography gutterBottom variant="subtitle1" component="div">
+            {nick}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {description}
+          </Typography>
+        </CardContent>
+      </CardPaddingLess>
+    </Card>
   );
 }
