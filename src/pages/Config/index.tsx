@@ -26,7 +26,7 @@ export default function Config() {
   return (
     <Container>
       <Box mt={4}>
-        <Typography variant="h1">{nick}</Typography>
+        <Typography variant="h1">Config {nick}</Typography>
       </Box>
     </Container>
   );

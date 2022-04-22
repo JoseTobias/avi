@@ -4,4 +4,5 @@ export interface ICardBotProps {
   description: string;
   onConfig?: () => void;
   onClick?: () => void;
+  enableConfig?: boolean;
 }

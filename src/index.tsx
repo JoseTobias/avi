@@ -5,7 +5,7 @@ import Route from "./router";
 import theme from "./theme";
 import { createRoot } from "react-dom/client";
 import "./basedStyles.css";
-import { AlertProvider, AuthProvider } from "./contexts";
+import { AlertProvider, AuthProvider, BotSelectedProvider } from "./contexts";
 import { CookiesProvider } from "react-cookie";
 
 const container = document.getElementById("root")!;
@@ -17,7 +17,9 @@ root.render(
     <AlertProvider>
       <AuthProvider>
         <CookiesProvider>
-          <Route />
+          <BotSelectedProvider>
+            <Route />
+          </BotSelectedProvider>
         </CookiesProvider>
       </AuthProvider>
     </AlertProvider>

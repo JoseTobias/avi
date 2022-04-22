@@ -21,6 +21,7 @@ import { BotService } from "../../services/Bot";
 import { ITeam } from "./page.props";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "../../components";
+import { useBotSelected } from "../../hooks/botSelected";
 
 interface IAddBot {
   name: string;
@@ -36,24 +37,29 @@ const voidAddBot = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { selectBot } = useBotSelected();
+
   const botService = React.useMemo(() => new BotService(), []);
 
-  const [teams, setTeams] = React.useState<ITeam[]>([]);
+  const [myTeams, setMyTeams] = React.useState<ITeam[]>([]);
+  const [searchedTeams, setSearchedTeams] = React.useState<ITeam[]>([]);
   const [botToAdd, setBotToAdd] = React.useState<IAddBot>(voidAddBot);
   const [botToAddError, setBotToAddError] = React.useState<IAddBot>(voidAddBot);
-  const [loading, setLoading] = React.useState(true);
+  const [loadingMyBots, setLoadingMyBots] = React.useState(true);
+  const [loadingOtherBots, setLoadingOtherBots] = React.useState(false);
   const [addLoading, setAddLoading] = React.useState(false);
   const [addModal, setAddModal] = React.useState(false);
+  const [searchText, setSearchText] = React.useState("");
 
   const loadBots = React.useCallback(async () => {
     try {
       const response = await botService.getBots();
       console.log("response", response);
-      setTeams(response || []);
+      setMyTeams(response || []);
     } catch (error) {
       console.log("error", error);
     } finally {
-      setLoading(false);
+      setLoadingMyBots(false);
     }
   }, [botService]);
 
@@ -64,21 +70,29 @@ export default function Dashboard() {
   async function searchBot(
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
-    setLoading(true);
+    setLoadingOtherBots(true);
     const nick = event.target.value;
-    let bots: ITeam[] | undefined = [];
     try {
-      if (nick.length === 0) {
-        bots = await botService.getBots();
+      setSearchText(nick);
+      if (nick.length !== 0) {
+        const bots = await botService.getBotsByNick(event.target.value);
+        const botsWithPermission = bots?.map((team) => {
+          const findMyTeam = myTeams.filter(
+            (myTeam) => myTeam.botId === team.botId
+          );
+          const havePermissions = !!findMyTeam.length;
+          console.log("findMyTeam", havePermissions);
+          return { ...team, havePermissions };
+        });
+        console.log(botsWithPermission);
+        setSearchedTeams(botsWithPermission || []);
       } else {
-        bots = await botService.getBotsByNick(event.target.value);
+        setSearchedTeams([]);
       }
-      console.log("response", bots);
-      setTeams(bots || []);
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      setLoadingOtherBots(false);
     }
   }
 
@@ -125,8 +139,8 @@ export default function Dashboard() {
 
     try {
       const newBot = await botService.addBot(botToAdd)!;
-      const newTeams: ITeam[] = teams ? [...teams, newBot!] : [newBot!];
-      setTeams(newTeams);
+      const newTeams: ITeam[] = myTeams ? [...myTeams, newBot!] : [newBot!];
+      setMyTeams(newTeams);
       toggleAddBotModal();
       console.log(newBot);
     } catch (error) {
@@ -137,8 +151,13 @@ export default function Dashboard() {
   }
 
   function configBot(team: ITeam) {
-    console.log(team);
-    navigate(`/config/${team.bot.nick}`);
+    selectBot(team.bot);
+    navigate(`/${team.bot.nick}/config`);
+  }
+
+  function openChat(team: ITeam) {
+    selectBot(team.bot);
+    navigate(`/${team.bot.nick}/chat`);
   }
 
   return (
@@ -179,33 +198,84 @@ export default function Dashboard() {
         >
           <Add />
         </Fab>
-        {!loading ? (
-          <Grid
-            container
-            direction="row"
-            spacing={2}
-            marginTop={4}
-            alignItems="stretch"
-          >
-            {teams.length > 0 ? (
-              teams?.map((team) => (
-                <Grid item sm={4} md={3} xs={12} key={team.bot.id}>
-                  <CardBot
-                    name={team.bot.name}
-                    nick={team.bot.nick}
-                    description={team.bot.description}
-                    onConfig={() => configBot(team)}
-                  />
-                </Grid>
-              ))
+        {searchText && (
+          <>
+            {!loadingOtherBots ? (
+              <Grid
+                container
+                direction="row"
+                spacing={2}
+                marginTop={2}
+                alignItems="stretch"
+              >
+                {searchedTeams.length > 0 ? (
+                  searchedTeams?.map((team) => (
+                    <Grid item sm={4} md={3} xs={12} key={team.bot.id}>
+                      <CardBot
+                        name={team.bot.name}
+                        nick={team.bot.nick}
+                        description={team.bot.description}
+                        onConfig={() => configBot(team)}
+                        onClick={() => openChat(team)}
+                        enableConfig={team.havePermissions}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    mt={4}
+                    width="100%"
+                  >
+                    <Typography gutterBottom variant="subtitle1" align="center">
+                      Nenhum bot encontrado
+                    </Typography>
+                  </Box>
+                )}
+              </Grid>
             ) : (
-              <Box display="flex" justifyContent="center" mt={4} width="100%">
-                <Typography gutterBottom variant="subtitle1" align="center">
-                  Nenhum bot cadastrado ainda
-                </Typography>
+              <Box display="flex" justifyContent="center" mt={8}>
+                <CircularProgress color="secondary" />
               </Box>
             )}
-          </Grid>
+          </>
+        )}
+
+        {!loadingMyBots ? (
+          <>
+            <Box mt={4}>
+              <Typography variant="h4">Seus Bots</Typography>
+            </Box>
+            <Grid
+              container
+              direction="row"
+              spacing={2}
+              marginTop={2}
+              alignItems="stretch"
+            >
+              {myTeams.length > 0 ? (
+                myTeams?.map((team) => (
+                  <Grid item sm={4} md={3} xs={12} key={team.bot.id}>
+                    <CardBot
+                      name={team.bot.name}
+                      nick={team.bot.nick}
+                      description={team.bot.description}
+                      onConfig={() => configBot(team)}
+                      onClick={() => openChat(team)}
+                      enableConfig={team.havePermissions}
+                    />
+                  </Grid>
+                ))
+              ) : (
+                <Box display="flex" justifyContent="center" mt={4} width="100%">
+                  <Typography gutterBottom variant="subtitle1" align="center">
+                    Nenhum bot cadastrado ainda
+                  </Typography>
+                </Box>
+              )}
+            </Grid>
+          </>
         ) : (
           <Box display="flex" justifyContent="center" mt={16}>
             <CircularProgress color="secondary" />
@@ -227,7 +297,7 @@ export default function Dashboard() {
             sx={{ marginTop: 2 }}
           />
           <TextField
-            id="name-input"
+            id="nick-input"
             label="Nickname"
             variant="standard"
             value={botToAdd.nick}
@@ -238,7 +308,7 @@ export default function Dashboard() {
             sx={{ marginTop: 2 }}
           />
           <TextField
-            id="name-input"
+            id="description-input"
             label="Description"
             variant="standard"
             value={botToAdd.description}

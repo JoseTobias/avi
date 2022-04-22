@@ -1,11 +1,17 @@
 import { IAuthProps } from "../../services";
 
-export type IAuthData = any;
+export interface IAuthData {
+  name: string;
+  email: string;
+  role: string;
+  id: string;
+}
 export type ISignInCredentials = IAuthProps;
 
 export interface IAuthContextData {
   isAuthenticated: boolean;
-  // authData: IAuthData;
+  authData: IAuthData;
   signIn: (data: ISignInCredentials) => Promise<void>;
   signOut: () => void;
+  verifyAuth: () => boolean;
 }

@@ -1,5 +1,3 @@
-import { AxiosError } from "axios";
-
 export interface IBot {
   id: string;
   name: string;
@@ -13,6 +11,7 @@ export interface ITeam {
   bot: IBot;
   userId: string;
   teamGroupId: string;
+  havePermissions?: boolean;
 }
 
 export interface IGetBotsResponseSuccess {
@@ -24,16 +23,6 @@ export interface AddBotProps {
   nick: string;
   description: string;
 }
-
-export interface ResponseError {
-  errors: [
-    {
-      message: string;
-    }
-  ];
-}
-
-export type IAuthResponseError = AxiosError<ResponseError, any>;
 export interface IRegisterProps {
   email: string;
   password: string;

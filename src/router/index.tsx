@@ -1,5 +1,6 @@
 import React from "react";
 
+import Chat from "../pages/Chat";
 import Config from "../pages/Config";
 import DashBoard from "../pages/DashBoard";
 import Login from "../pages/Login";
@@ -20,13 +21,39 @@ const appRoutes: React.FC = () => {
           }
         />
         <Route
-          path="/config/:nick"
+          path="/:nick/config"
           element={
             <RequireAuth>
               <Config />
             </RequireAuth>
           }
         />
+        <Route
+          path="/:nick/chat"
+          element={
+            <RequireAuth>
+              <Chat />
+            </RequireAuth>
+          }
+        />
+        {/* <Route
+            path="/config"
+            element={
+              <RequireAuth>
+                <Config />
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/chat"
+            element={
+              <RequireAuth>
+                <Config />
+              </RequireAuth>
+            }
+          />
+        </Route> */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>
