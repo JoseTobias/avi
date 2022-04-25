@@ -18,6 +18,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "../../components";
 import { useAlert } from "../../hooks/alert";
 import { AuthService } from "../../services/Auth";
+import { useNavigate } from "react-router-dom";
 
 interface State {
   mail: string;
@@ -36,6 +37,7 @@ interface Error {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const { setFeedback } = useAlert();
   const [values, setValues] = React.useState<State>({
     mail: "",
@@ -129,6 +131,8 @@ export default function Home() {
       setFeedback({
         type: "success",
         message: "Cadastro realizado com sucesso",
+        actionButtonText: "login",
+        onActionButton: () => navigate("/login"),
       });
     } catch (error) {
       setFeedback({

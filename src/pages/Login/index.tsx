@@ -15,7 +15,7 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as NavigateLink } from "react-router-dom";
 
 import { LoadingButton } from "../../components";
 
@@ -192,19 +192,21 @@ export default function Home() {
                     </Box>
                   </Box>
                   <Box
-                    mt={4}
+                    mt={3}
                     justifyContent="space-between"
                     display="flex"
                     width="100%"
                   >
-                    <Link
-                      href="#"
-                      underline="none"
-                      variant="caption"
-                      component="button"
-                    >
-                      Fazer uma conta
-                    </Link>
+                    <NavigateLink to="/register">
+                      <Link
+                        href="#"
+                        underline="none"
+                        variant="caption"
+                        component="button"
+                      >
+                        Fazer uma conta
+                      </Link>
+                    </NavigateLink>
                     <Link
                       href="#"
                       underline="none"

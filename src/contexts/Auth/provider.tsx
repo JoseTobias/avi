@@ -28,10 +28,10 @@ export const AuthProvider: FC<any> = ({ children }) => {
   const signIn = useCallback(
     async (data: ISignInCredentials) => {
       try {
-        const { cookie, ...rest } = await authService.signIn(data);
+        const { cookie, user } = await authService.signIn(data);
         // console.log("cookie", cookies);
         setCookie("AVISID", cookie);
-        setAuthData(rest);
+        setAuthData(user);
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);

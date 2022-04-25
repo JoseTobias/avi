@@ -5,7 +5,13 @@ import Route from "./router";
 import theme from "./theme";
 import { createRoot } from "react-dom/client";
 import "./basedStyles.css";
-import { AlertProvider, AuthProvider, BotSelectedProvider } from "./contexts";
+import {
+  AlertProvider,
+  AuthProvider,
+  BotSelectedProvider,
+  ChatMessageProvider,
+  TeamsProvider,
+} from "./contexts";
 import { CookiesProvider } from "react-cookie";
 
 const container = document.getElementById("root")!;
@@ -18,7 +24,11 @@ root.render(
       <AuthProvider>
         <CookiesProvider>
           <BotSelectedProvider>
-            <Route />
+            <ChatMessageProvider>
+              <TeamsProvider>
+                <Route />
+              </TeamsProvider>
+            </ChatMessageProvider>
           </BotSelectedProvider>
         </CookiesProvider>
       </AuthProvider>

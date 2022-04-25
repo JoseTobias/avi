@@ -10,7 +10,10 @@ export const ChatMessageProvider: FC<any> = ({ children }) => {
 
   const addChat = useCallback(
     (data: IMessage[], botId: string) => {
-      setMessages({ ...messages, [botId]: data });
+      const hasNoThisMessages = (messages && !messages[botId]) || !messages;
+      if (hasNoThisMessages) {
+        setMessages({ ...messages, [botId]: data });
+      }
     },
     [messages]
   );

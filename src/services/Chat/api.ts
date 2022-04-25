@@ -29,7 +29,7 @@ export class ChatService {
       });
       const formatted: IMessageReturn[] = response.data.map((chat) => {
         return {
-          isMyMessage: chat.receiverId === userId,
+          isMyMessage: chat.senderId === userId,
           message: chat.data,
         };
       });

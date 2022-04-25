@@ -23,27 +23,39 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { IParams } from "./page.props";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "../../hooks/auth";
-import { useBotSelected } from "../../hooks/botSelected";
+import { useChatMessage } from "../../hooks/chatMessage";
 import { useNavigate } from "react-router-dom";
+import { useTeams } from "../../hooks/teams";
+import { useBotSelected } from "../../hooks/botSelected";
 
 export default function Chat() {
+  const { teams } = useTeams();
   const navigate = useNavigate();
   const { authData } = useAuth();
-  const { bot } = useBotSelected();
-  console.log(bot);
+  const { bot, selectBot } = useBotSelected();
+  const { addChat, messages } = useChatMessage();
 
   const { nick } = useParams<keyof IParams>();
 
   const chatService = React.useMemo(() => new ChatService(), []);
 
-  const [loading, setLoading] = React.useState(true);
   const [sendingMessage, setSendingMessage] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [title, setTitle] = React.useState(bot.nick);
   const [chats, setChats] = React.useState<IChat[]>();
   const [loadingChats, setLoadingChats] = React.useState(true);
+  const [loadingMessages, setLoadingMessages] = React.useState(false);
 
   const [value, setValue] = React.useState(0);
+
+  const chatId = React.useMemo(() => {
+    return chats ? chats[value].bot.id : "";
+  }, [value, chats]);
+
+  const botChatIsMine = React.useMemo(() => {
+    const find = teams?.filter((team) => team.bot.nick === title);
+    return find && find.length > 0;
+  }, [title, teams]);
 
   function a11yProps(index: number) {
     return {
@@ -70,7 +82,6 @@ export default function Chat() {
     let chatsResponse: IChat[] | undefined;
     try {
       chatsResponse = await chatService.getChats();
-      console.log("response", chatsResponse);
       const findThisChat = chatsResponse?.filter(
         (chat) => chat.bot.nick === nick
       );
@@ -88,9 +99,40 @@ export default function Chat() {
     }
   }, [chatService, nick, bot, navigate]);
 
+  const loadMessages = React.useCallback(async () => {
+    setLoadingMessages(true);
+    try {
+      const hasMessages = messages && !!messages[chatId];
+      if (chats && !hasMessages) {
+        const response = await chatService.getMessages({
+          userId: authData.id,
+          chatId: chats[value].id,
+        });
+        addChat(response || [], chatId);
+      }
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setLoadingMessages(false);
+    }
+  }, [chatService, value, chats, authData, addChat, chatId, messages]);
+
   React.useEffect(() => {
     loadChats();
   }, [loadChats]);
+
+  React.useEffect(() => {
+    loadMessages();
+  }, [loadMessages, value]);
+
+  function onConfig() {
+    const find = teams?.filter((team) => team.bot.nick === title);
+    if (find && find.length > 0) {
+      const botSelected = find[0].bot;
+      selectBot(botSelected);
+      navigate(`/${botSelected.nick}/config`);
+    }
+  }
 
   return (
     <Container
@@ -109,7 +151,11 @@ export default function Chat() {
           flexGrow: 1,
         }}
       >
-        <HeaderChat nick={title} />
+        <HeaderChat
+          nick={title}
+          onConfig={onConfig}
+          enableConfig={botChatIsMine}
+        />
         {loadingChats ? (
           <Box display="flex" justifyContent="center" mt={8}>
             <CircularProgress color="secondary" />
@@ -153,11 +199,14 @@ export default function Chat() {
                 sx={{
                   borderLeft: "solid 1px",
                   borderColor: "divider",
+                  flexGrow: 1,
                 }}
               >
-                {value !== -1 && (
+                {!loadingMessages ? (
                   <>
-                    <ContainerChat />
+                    <ContainerChat
+                      messages={messages ? messages[chatId] : undefined}
+                    />
                     <Box
                       p={2}
                       display="flex"
@@ -189,6 +238,15 @@ export default function Chat() {
                       </IconButton>
                     </Box>
                   </>
+                ) : (
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    height="100%"
+                    alignItems="center"
+                  >
+                    <CircularProgress color="primary" size={28} />
+                  </Box>
                 )}
               </Box>
             </Grid>

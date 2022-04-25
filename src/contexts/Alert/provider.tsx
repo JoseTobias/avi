@@ -24,13 +24,17 @@ export const AlertProvider: FC<any> = ({ children }) => {
 
     if (data.type === "error") {
       setAlertData({
-        message: "Aconteceu algo inesperado, tente novamente",
+        message:
+          typeof data.message === "string"
+            ? data.message
+            : "Aconteceu algo inesperado, tente novamente",
         type: "error",
       });
       return;
     }
 
     const feedback: IFeedbackData = {
+      ...data,
       message: data.message as string,
       type: data.type,
     };

@@ -10,6 +10,10 @@ import {
 import { IFeedbackProps } from "./component.props";
 
 export function Alert({ data, onClose }: IFeedbackProps) {
+  function onClick() {
+    data.onActionButton && data.onActionButton();
+    onClose && onClose();
+  }
   return (
     <Snackbar
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -21,9 +25,13 @@ export function Alert({ data, onClose }: IFeedbackProps) {
         <AlertTitle>{data.message}</AlertTitle>
         <Box display="flex" flexDirection="row-reverse">
           {data.type === "success" && (
-            <Button color="inherit" size="small">
-              Login
-            </Button>
+            <>
+              {data.actionButtonText && data.onActionButton ? (
+                <Button color="inherit" size="small" onClick={onClick}>
+                  {data.actionButtonText}
+                </Button>
+              ) : null}
+            </>
           )}
         </Box>
       </MuiAlert>

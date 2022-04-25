@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 export * from "./Auth";
 export * from "./Bot";
 export * from "./Chat";
+export * from "./Config";
 
 export interface ResponseError {
   errors: [

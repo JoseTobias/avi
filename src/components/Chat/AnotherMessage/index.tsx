@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Typography, Box, Grid } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { IMessageProps } from "./component.props";
 
-export function AnotherMessage() {
+export function AnotherMessage({ children }: IMessageProps) {
   const theme = useTheme();
   return (
     <Grid container>
@@ -13,18 +14,10 @@ export function AnotherMessage() {
             p={1}
             borderRadius={1}
           >
-            <Typography variant="body2">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Totam
-              saepe minus dignissimos eius voluptas eum iste, atque architecto.
-              Cupiditate illo eius vitae officiis soluta a sint voluptas
-              perspiciatis, aperiam voluptates.
-            </Typography>
+            <Typography variant="body2">{children}</Typography>
           </Box>
         </Box>
       </Grid>
-      {/* <Grid item md={8}>
-        <Typography variant="body2">Teste Other</Typography>
-      </Grid> */}
     </Grid>
   );
 }

@@ -22,6 +22,7 @@ import { ITeam } from "./page.props";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "../../components";
 import { useBotSelected } from "../../hooks/botSelected";
+import { useTeams } from "../../hooks/teams";
 
 interface IAddBot {
   name: string;
@@ -38,10 +39,10 @@ const voidAddBot = {
 export default function Dashboard() {
   const navigate = useNavigate();
   const { selectBot } = useBotSelected();
+  const { teams, updateTeams } = useTeams();
 
   const botService = React.useMemo(() => new BotService(), []);
 
-  const [myTeams, setMyTeams] = React.useState<ITeam[]>([]);
   const [searchedTeams, setSearchedTeams] = React.useState<ITeam[]>([]);
   const [botToAdd, setBotToAdd] = React.useState<IAddBot>(voidAddBot);
   const [botToAddError, setBotToAddError] = React.useState<IAddBot>(voidAddBot);
@@ -54,14 +55,13 @@ export default function Dashboard() {
   const loadBots = React.useCallback(async () => {
     try {
       const response = await botService.getBots();
-      console.log("response", response);
-      setMyTeams(response || []);
+      updateTeams(response || []);
     } catch (error) {
       console.log("error", error);
     } finally {
       setLoadingMyBots(false);
     }
-  }, [botService]);
+  }, [botService, updateTeams]);
 
   React.useEffect(() => {
     loadBots();
@@ -77,10 +77,10 @@ export default function Dashboard() {
       if (nick.length !== 0) {
         const bots = await botService.getBotsByNick(event.target.value);
         const botsWithPermission = bots?.map((team) => {
-          const findMyTeam = myTeams.filter(
+          const findMyTeam = teams?.filter(
             (myTeam) => myTeam.botId === team.botId
           );
-          const havePermissions = !!findMyTeam.length;
+          const havePermissions = !!findMyTeam?.length;
           console.log("findMyTeam", havePermissions);
           return { ...team, havePermissions };
         });
@@ -139,8 +139,8 @@ export default function Dashboard() {
 
     try {
       const newBot = await botService.addBot(botToAdd)!;
-      const newTeams: ITeam[] = myTeams ? [...myTeams, newBot!] : [newBot!];
-      setMyTeams(newTeams);
+      const newTeams: ITeam[] = teams ? [...teams, newBot!] : [newBot!];
+      updateTeams(newTeams);
       toggleAddBotModal();
       console.log(newBot);
     } catch (error) {
@@ -254,8 +254,8 @@ export default function Dashboard() {
               marginTop={2}
               alignItems="stretch"
             >
-              {myTeams.length > 0 ? (
-                myTeams?.map((team) => (
+              {teams && teams.length > 0 ? (
+                teams?.map((team) => (
                   <Grid item sm={4} md={3} xs={12} key={team.bot.id}>
                     <CardBot
                       name={team.bot.name}

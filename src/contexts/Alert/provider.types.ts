@@ -1,6 +1,8 @@
 export interface IFeedback {
   type: "error" | "success";
   message: string | Error | unknown;
+  actionButtonText?: string;
+  onActionButton?: () => void;
 }
 
 export interface IFeedbackData {
