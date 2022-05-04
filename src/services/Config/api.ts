@@ -1,5 +1,5 @@
 import { BotApi } from "../../infra";
-import { AddEntityProps, IAuthResponseError } from "../";
+import { AddEntityProps, IAuthResponseError, AddActivityProps } from "../";
 
 export class ConfigService {
   async sendEntity({
@@ -11,6 +11,23 @@ export class ConfigService {
       await BotApi.post(
         "/entities",
         { input, output },
+        { headers: { "x-bot": botId } }
+      );
+
+      return;
+    } catch (err) {
+      const error = err as IAuthResponseError;
+      throw new Error(error.response?.data.errors[0].message);
+    }
+  }
+  async sendActivity({
+    scheduledAt,
+    botId,
+  }: AddActivityProps): Promise<void | undefined> {
+    try {
+      await BotApi.post(
+        "/activities",
+        { scheduledAt },
         { headers: { "x-bot": botId } }
       );
 

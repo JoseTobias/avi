@@ -36,10 +36,9 @@ export default function Config() {
 
   const [value, setValue] = React.useState<RenderOption>(0);
   const [loadingEntity, setLoadingEntity] = React.useState(false);
+  const [loadingActivity, setLoadingActivity] = React.useState(false);
   const [messageData, setMessageData] =
     React.useState<MessageDataState>(voidMessageData);
-
-  console.log(nick);
 
   function changeMessage(value: string, type: keyof MessageDataState) {
     setMessageData({ ...messageData, [type]: value });
@@ -95,6 +94,29 @@ export default function Config() {
     }
   }
 
+  async function scheduleTrainer(date: string) {
+    console.log("data", date);
+    setLoadingActivity(true);
+    try {
+      const response = await configService.sendActivity({
+        scheduledAt: date,
+        botId: bot.id,
+      });
+      setFeedback({
+        type: "success",
+        message: "Treino cadastrado com sucesso",
+      });
+      console.log(response);
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: error,
+      });
+    } finally {
+      setLoadingActivity(false);
+    }
+  }
+
   function renderConfigOption(item: RenderOption) {
     const options = {
       0: (
@@ -108,7 +130,7 @@ export default function Config() {
       ),
       1: (
         <Box>
-          <FormDate />
+          <FormDate onSubmit={scheduleTrainer} loading={loadingActivity} />
         </Box>
       ),
       2: (

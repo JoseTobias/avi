@@ -7727,6 +7727,11 @@ sass-loader@^12.3.0:
     klona "^2.0.4"
     neo-async "^2.6.2"
 
+sassy-datepicker@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/sassy-datepicker/-/sassy-datepicker-0.8.0.tgz#c7c9f44e8b2eb2ce3e9ad28a1ffd8b9337ec1a9a"
+  integrity sha512-OBn2Gq5IlUOkv07hZ0N6IM58PqdI5vJTuuWt54qlKxd8Fur5rd1B1/hwhtlt4rO/H9gq3SV9/3Cb/TXW15P/1w==
+
 sax@~1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"

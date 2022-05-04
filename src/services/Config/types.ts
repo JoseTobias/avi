@@ -3,3 +3,8 @@ export interface AddEntityProps {
   output: string;
   botId: string;
 }
+
+export interface AddActivityProps {
+  scheduledAt: string;
+  botId: string;
+}
