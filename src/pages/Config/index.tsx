@@ -22,6 +22,7 @@ import { IParams, RenderOption, MessageDataState } from "./page.props";
 import { MessagesForm, FormDate } from "./components";
 import { useAlert } from "../../hooks/alert";
 import { useBotSelected } from "../../hooks/botSelected";
+import { useNavigate } from "react-router-dom";
 
 const voidMessageData = {
   message: "",
@@ -32,6 +33,7 @@ export default function Config() {
   const { bot } = useBotSelected();
   const { setFeedback } = useAlert();
   const { nick } = useParams<keyof IParams>();
+  const navigate = useNavigate();
   const configService = React.useMemo(() => new ConfigService(), []);
 
   const [value, setValue] = React.useState<RenderOption>(0);
@@ -95,7 +97,6 @@ export default function Config() {
   }
 
   async function scheduleTrainer(date: string) {
-    console.log("data", date);
     setLoadingActivity(true);
     try {
       const response = await configService.sendActivity({
@@ -106,7 +107,6 @@ export default function Config() {
         type: "success",
         message: "Treino cadastrado com sucesso",
       });
-      console.log(response);
     } catch (error) {
       setFeedback({
         type: "error",
@@ -116,6 +116,12 @@ export default function Config() {
       setLoadingActivity(false);
     }
   }
+
+  React.useEffect(() => {
+    if (bot.nick.length === 0) {
+      return navigate("/");
+    }
+  }, [bot, navigate]);
 
   function renderConfigOption(item: RenderOption) {
     const options = {

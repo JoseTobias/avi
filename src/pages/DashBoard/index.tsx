@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "../../components";
 import { useBotSelected } from "../../hooks/botSelected";
 import { useTeams } from "../../hooks/teams";
+import { useAuth } from "../../hooks/auth";
 
 interface IAddBot {
   name: string;
@@ -40,6 +41,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { selectBot } = useBotSelected();
   const { teams, updateTeams } = useTeams();
+  const { setAuth } = useAuth();
 
   const botService = React.useMemo(() => new BotService(), []);
 
@@ -55,13 +57,14 @@ export default function Dashboard() {
   const loadBots = React.useCallback(async () => {
     try {
       const response = await botService.getBots();
-      updateTeams(response || []);
+      updateTeams(response?.teams || []);
+      setAuth(response?.auth);
     } catch (error) {
       console.log("error", error);
     } finally {
       setLoadingMyBots(false);
     }
-  }, [botService, updateTeams]);
+  }, [botService, updateTeams, setAuth]);
 
   React.useEffect(() => {
     loadBots();

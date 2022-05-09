@@ -1,3 +1,5 @@
+import { IAuthData } from "../../contexts";
+
 export interface IBot {
   id: string;
   name: string;
@@ -14,8 +16,13 @@ export interface ITeam {
   havePermissions?: boolean;
 }
 
-export interface IGetBotsResponseSuccess {
+export interface IGetBotsResponseSuccess extends IAuthData {
   teams: ITeam[];
+}
+
+export interface IGetBotsReturn {
+  teams: ITeam[];
+  auth: IAuthData;
 }
 
 export interface AddBotProps {

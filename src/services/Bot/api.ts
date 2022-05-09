@@ -5,16 +5,26 @@ import {
   IAuthResponseError,
   IBot,
   AddBotProps,
+  IGetBotsReturn,
 } from "../";
 
 export class BotService {
-  async getBots(): Promise<ITeam[] | undefined> {
+  async getBots(): Promise<IGetBotsReturn | undefined> {
     try {
       const response = await BotApi.get<IGetBotsResponseSuccess>("/users/me");
-      return response.data.teams.map((team) => ({
+      const teams = response.data.teams.map((team) => ({
         ...team,
         havePermissions: true,
       }));
+      return {
+        teams,
+        auth: {
+          id: response.data.id,
+          name: response.data.name,
+          email: response.data.email,
+          role: response.data.role,
+        },
+      };
     } catch (err) {
       const error = err as IAuthResponseError;
       throw new Error(error.response?.data.errors[0].message);

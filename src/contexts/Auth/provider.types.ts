@@ -14,4 +14,5 @@ export interface IAuthContextData {
   signIn: (data: ISignInCredentials) => Promise<void>;
   signOut: () => void;
   verifyAuth: () => boolean;
+  setAuth: (data: IAuthData | undefined) => void;
 }

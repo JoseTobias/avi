@@ -34,7 +34,7 @@ interface Error {
   password: string;
 }
 
-export default function Home() {
+export default function Login() {
   const navigate = useNavigate();
   const { setFeedback } = useAlert();
   const { signIn } = useAuth();

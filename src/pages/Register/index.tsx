@@ -36,7 +36,7 @@ interface Error {
   confirmPassword: string;
 }
 
-export default function Home() {
+export default function Register() {
   const navigate = useNavigate();
   const { setFeedback } = useAlert();
   const [values, setValues] = React.useState<State>({

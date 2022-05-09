@@ -13,17 +13,19 @@ export const AuthContext = createContext<IAuthContextData>(
   {} as IAuthContextData
 );
 
+const initialState = {
+  email: "",
+  id: "",
+  name: "",
+  role: "",
+};
+
 export const AuthProvider: FC<any> = ({ children }) => {
   const [cookies, setCookie] = useCookies();
   const authService = React.useMemo(() => new AuthService(), []);
 
   const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const [authData, setAuthData] = useState<IAuthData>({
-    email: "",
-    id: "",
-    name: "",
-    role: "",
-  });
+  const [authData, setAuthData] = useState<IAuthData>(initialState);
 
   const signIn = useCallback(
     async (data: ISignInCredentials) => {
@@ -45,6 +47,10 @@ export const AuthProvider: FC<any> = ({ children }) => {
     setIsAuthenticated(false);
   }, []);
 
+  const setAuth = useCallback((data: IAuthData | undefined) => {
+    setAuthData(data || initialState);
+  }, []);
+
   const verifyAuth = useCallback(() => {
     if (cookies["AVISID"]) {
       authService.setToken(cookies["AVISID"]);
@@ -62,6 +68,7 @@ export const AuthProvider: FC<any> = ({ children }) => {
         signIn,
         signOut,
         verifyAuth,
+        setAuth,
       }}
     >
       {children}

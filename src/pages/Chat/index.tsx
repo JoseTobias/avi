@@ -76,7 +76,7 @@ export default function Chat() {
 
   const loadChats = React.useCallback(async () => {
     setLoadingChats(true);
-    if (bot.nick !== nick) {
+    if (bot.nick !== nick || bot.nick.length === 0) {
       return navigate("/");
     }
     let chatsResponse: IChat[] | undefined;
@@ -85,10 +85,12 @@ export default function Chat() {
       const findThisChat = chatsResponse?.filter(
         (chat) => chat.bot.nick === nick
       );
+
       if (findThisChat?.length === 0) {
         const chat = await chatService.addChat(bot.id);
         chat && chatsResponse?.push(chat);
       }
+
       setChats(chatsResponse || []);
       const index = chatsResponse?.findIndex((item) => item.bot.nick === nick);
       setValue(index || 1);
