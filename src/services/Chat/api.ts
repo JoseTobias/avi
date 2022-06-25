@@ -1,4 +1,4 @@
-import { BotApi } from "../../infra";
+import { BotApi } from "../../config";
 import {
   IChat,
   IAuthResponseError,

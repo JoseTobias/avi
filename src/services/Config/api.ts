@@ -1,4 +1,4 @@
-import { BotApi } from "../../infra";
+import { BotApi } from "../../config";
 import { AddEntityProps, IAuthResponseError, AddActivityProps } from "../";
 
 export class ConfigService {
