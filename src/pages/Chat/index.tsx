@@ -33,7 +33,7 @@ export default function Chat() {
   const navigate = useNavigate();
   const { authData } = useAuth();
   const { bot, selectBot } = useBotSelected();
-  const { addChat, messages } = useChatMessage();
+  const { addChat, messages, overwriteChat } = useChatMessage();
 
   const { nick } = useParams<keyof IParams>();
 
@@ -49,7 +49,7 @@ export default function Chat() {
   const [value, setValue] = React.useState(0);
 
   const chatId = React.useMemo(() => {
-    return chats ? chats[value].bot.id : "";
+    return chats ? chats[value].id : "";
   }, [value, chats]);
 
   const botChatIsMine = React.useMemo(() => {
@@ -69,9 +69,29 @@ export default function Chat() {
     chats && setTitle(chats[newValue].bot.nick);
   };
 
-  function sendMessage() {
+  function sleep(ms:number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+  async function sendMessage() {
     setSendingMessage(true);
     setMessage("");
+
+    try {
+      await chatService.sendMessage({ chatId, data: message });
+      if(chats) {
+        const response = await chatService.getMessages({
+          userId: authData.id,
+          chatId: chats[value].id,
+        });
+        overwriteChat(response || [], chatId);
+
+      }
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setSendingMessage(false);
+    }
   }
 
   const loadChats = React.useCallback(async () => {

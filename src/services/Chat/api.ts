@@ -5,6 +5,7 @@ import {
   IMessage,
   GetMessageProps,
   IMessageReturn,
+  IMessageSend
 } from "../";
 
 export class ChatService {
@@ -44,6 +45,17 @@ export class ChatService {
   async addChat(botId: string): Promise<IChat | undefined> {
     try {
       const chats = await BotApi.post<IChat>("/chats", { botId });
+
+      return chats.data;
+    } catch (err) {
+      const error = err as IAuthResponseError;
+      throw new Error(error.response?.data.errors[0].message);
+    }
+  }
+
+  async sendMessage({chatId, data}: IMessageSend) {
+    try {
+      const chats = await BotApi.post("/messages", { chatId, data });
 
       return chats.data;
     } catch (err) {

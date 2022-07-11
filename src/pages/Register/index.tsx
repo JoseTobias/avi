@@ -111,14 +111,17 @@ export default function Register() {
         name: !values.name.length ? errorMessage : "",
         confirmPassword: !values.confirmPassword.length ? errorMessage : "",
       });
+      setLoading(false);
       return;
     }
     if (!validateEmail(values.mail)) {
       handleChangeError("mail", "Email inválido");
+      setLoading(false);
       return;
     }
     if (values.password !== values.confirmPassword) {
       handleChangeError("confirmPassword", "As senhas devem ser iguais");
+      setLoading(false);
       return;
     }
 

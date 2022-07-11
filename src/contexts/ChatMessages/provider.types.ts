@@ -10,4 +10,5 @@ export interface IMessages {
 export interface IMessagesContext {
   messages: IMessages | undefined;
   addChat: (data: IMessage[], botId: string) => void;
+  overwriteChat: (data: IMessage[], botId: string) => void;
 }

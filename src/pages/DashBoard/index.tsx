@@ -84,10 +84,8 @@ export default function Dashboard() {
             (myTeam) => myTeam.botId === team.botId
           );
           const havePermissions = !!findMyTeam?.length;
-          console.log("findMyTeam", havePermissions);
           return { ...team, havePermissions };
         });
-        console.log(botsWithPermission);
         setSearchedTeams(botsWithPermission || []);
       } else {
         setSearchedTeams([]);
@@ -137,6 +135,7 @@ export default function Dashboard() {
         nick: !botToAdd.nick.length ? errorMessage : "",
         description: !botToAdd.description.length ? errorMessage : "",
       });
+      setAddLoading(false);
       return;
     }
 

@@ -95,10 +95,12 @@ export default function Login() {
         mail: !values.mail.length ? errorMessage : "",
         password: !values.password.length ? errorMessage : "",
       });
+      setLoading(false);
       return;
     }
     if (!validateEmail(values.mail)) {
       handleChangeError("mail", "Email inválido");
+      setLoading(false);
       return;
     }
 

@@ -25,3 +25,8 @@ export interface IMessageReturn {
   isMyMessage: boolean;
   message: string;
 }
+
+export interface IMessageSend {
+  chatId: string;
+  data: string;
+}

@@ -17,12 +17,20 @@ export const ChatMessageProvider: FC<any> = ({ children }) => {
     },
     [messages]
   );
+  
+  const overwriteChat = useCallback(
+    (data: IMessage[], botId: string) => {
+      setMessages({ ...messages, [botId]: data });
+    },
+    [messages]
+  );
 
   return (
     <MessagesContext.Provider
       value={{
         messages,
         addChat,
+        overwriteChat,
       }}
     >
       {children}

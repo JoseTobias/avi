@@ -31,7 +31,6 @@ export const AuthProvider: FC<any> = ({ children }) => {
     async (data: ISignInCredentials) => {
       try {
         const { cookie, user } = await authService.signIn(data);
-        // console.log("cookie", cookies);
         setCookie("AVISID", cookie);
         setAuthData(user);
         setIsAuthenticated(true);
